@@ -115,8 +115,10 @@ To cycle to previous completions, type `M-TAB'."
 ;; `\\<minibuffer-local-completion-map>\\[minibuffer-complete-backward]'
   (interactive "p")
   (if (and minibuffer-complete-cycle
+	   (not (eq this-command 'completion-at-point)) ; Emacs 24
 	   ;; See Fminibuffer_complete:
 	   (or (eq last-command this-command)
+	       (eq last-command 'completion-at-point)   ; Emacs 24
 	       (and (eq minibuffer-complete-cycle 'auto)
 		    (progn
 		      (setq mcc-completion-begin nil
