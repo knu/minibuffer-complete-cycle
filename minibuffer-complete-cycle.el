@@ -111,7 +111,7 @@ turn in the minibuffer and highlight it in the *Completions* buffer with
 the `minibuffer-complete-cycle' face.
 
 Prefix arg means select the COUNT'th next completion.
-To cycle to previous completions, type `M-TAB'."
+To cycle to previous completions, type <backtab>."
 ;; `\\<minibuffer-local-completion-map>\\[minibuffer-complete-backward]'
   (interactive "p")
   (if (and minibuffer-complete-cycle
@@ -163,12 +163,12 @@ Prefix arg means select the COUNT'th previous completion."
 
 ;; Functions:
 (defun mcc-define-backward-key ()	; mcc-minor-mode & -keymap
-  "Bind `M-TAB' to `minibuffer-complete-backward' in the local keymap.
+  "Bind <backtab> to `minibuffer-complete-backward' in the local keymap.
 This has no effect unless the `minibuffer-complete-cycle' option is set and
-`M-TAB' is not already bound in the keymap."
+<backtab> is not already bound in the keymap."
   (if (and minibuffer-complete-cycle
-	   (null (local-key-binding "\M-\t")))
-      (local-set-key "\M-\t" 'minibuffer-complete-backward)))
+	   (null (local-key-binding (kbd "<backtab>"))))
+      (local-set-key (kbd "<backtab>") 'minibuffer-complete-backward)))
 
 (add-hook 'minibuffer-setup-hook 'mcc-define-backward-key)
 
