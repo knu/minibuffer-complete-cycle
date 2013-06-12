@@ -141,17 +141,11 @@ To cycle to previous completions, type `M-TAB'."
 			   (minibuffer-prompt-end)
 			 (point-min))
 		       (point-max))
-	(if incomplete-path
-	    (progn
-	      ;; Truncate to directory:
-	      (setq incomplete-path
-		    (or (file-name-directory
-			 (if (and mcc-completion-begin mcc-completion-end
-				  (file-directory-p incomplete-path))
-			     (directory-file-name incomplete-path)
-			   incomplete-path))
-			""))
-	      (insert incomplete-path)))
+        (when incomplete-path
+          (and mcc-completion-begin mcc-completion-end
+               (setq incomplete-path
+                     (substring incomplete-path 0 (- mcc-completion-begin mcc-completion-end))))
+          (insert incomplete-path))
 	(insert (mcc-completion-string count))
 	(mcc-display-completion (< count 0)))
     ;; Reset the mcc variables and proceed normally:
