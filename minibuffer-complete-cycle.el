@@ -149,10 +149,9 @@ To cycle to previous completions, type `M-TAB'."
 	(insert (mcc-completion-string count))
 	(mcc-display-completion (< count 0)))
     ;; Reset the mcc variables and proceed normally:
-    (progn
-      (setq mcc-completion-begin nil
-	    mcc-completion-end nil)
-      ad-do-it)))
+    (setq mcc-completion-begin nil
+          mcc-completion-end nil)
+    ad-do-it))
 
 (defun minibuffer-complete-backward (&optional count)
   "Just like `minibuffer-complete', but cycle to the previous completion.
