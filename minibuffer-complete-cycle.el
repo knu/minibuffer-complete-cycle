@@ -122,8 +122,8 @@ To cycle to previous completions, type <backtab>."
       ;; next completion:
       (let ((incomplete-path
 	     (if minibuffer-completing-file-name
-		 (buffer-substring (minibuffer-prompt-end)
-				   (point-max)))))
+		 (buffer-substring-no-properties (minibuffer-prompt-end)
+                                                 (point-max)))))
 	(delete-region (minibuffer-prompt-end)
 		       (point-max))
         (when incomplete-path
@@ -192,8 +192,7 @@ the *Completions* buffer"))
 					     mcc-completion-property
 					     nil (point-max)))
 	  (setq n (1- n))))
-      ;; Return the next completion (buffer-substring-no-properties?):
-      (buffer-substring mcc-completion-begin mcc-completion-end))))
+      (buffer-substring-no-properties mcc-completion-begin mcc-completion-end))))
 
 (defun mcc-display-completion (&optional backward)
   "Highlight the current completion and scroll the *Completions* buffer \
