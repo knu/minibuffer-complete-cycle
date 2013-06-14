@@ -85,22 +85,13 @@ If `auto', `minibuffer-complete' selects the first completion immediately."
   "If non-nil, the end of the selected completion.")
 
 (defvar mcc-completion-property
-  (cond ((string-match "XEmacs" emacs-version) 'list-mode-item)
-	(t 'mouse-face))
+  'mouse-face
   "The text property used to identify completions.")
 
 (defvar mcc-overlay
-  (progn
-    (or (face-differs-from-default-p 'minibuffer-complete-cycle)
-	(copy-face 'secondary-selection 'minibuffer-complete-cycle)) ; Emacs 19
-    (cond ((and (fboundp 'make-extent) (fboundp 'set-extent-property)) ; XEmacs
-	   (let ((extent (make-extent 1 1)))
-	     (set-extent-property extent 'face 'minibuffer-complete-cycle)
-	     extent))
-	  ((and (fboundp 'make-overlay) (fboundp 'overlay-put))
-	   (let ((overlay (make-overlay 1 1)))
-	     (overlay-put overlay 'face 'minibuffer-complete-cycle)
-	     overlay))))
+  (let ((overlay (make-overlay 1 1)))
+    (overlay-put overlay 'face 'minibuffer-complete-cycle)
+    overlay)
   "If non-nil, the overlay used to highlight the *Completions* buffer.")
 
 
@@ -130,17 +121,10 @@ To cycle to previous completions, type <backtab>."
       ;; Delete the current completion, then insert and display the
       ;; next completion:
       (let ((incomplete-path
-	     (if (cond ((boundp 'minibuffer-completing-file-name) ; Emacs 20
-			(symbol-value 'minibuffer-completing-file-name))
-		       ((eq minibuffer-completion-table
-			    'read-file-name-internal)))
-		 (buffer-substring (if (fboundp 'minibuffer-prompt-end)	; Emacs 21
-				       (minibuffer-prompt-end)
-				     (point-min))
+	     (if minibuffer-completing-file-name
+		 (buffer-substring (minibuffer-prompt-end)
 				   (point-max)))))
-	(delete-region (if (fboundp 'minibuffer-prompt-end) ; Emacs 21
-			   (minibuffer-prompt-end)
-			 (point-min))
+	(delete-region (minibuffer-prompt-end)
 		       (point-max))
         (when incomplete-path
           (and mcc-completion-begin mcc-completion-end
@@ -218,12 +202,8 @@ Scroll up by default, but scroll down if BACKWARD is non-nil."
   (let ((completion-buffer (window-buffer minibuffer-scroll-window))
 	(minibuffer-window (selected-window)))
     (if mcc-overlay
-	(cond ((fboundp 'set-extent-endpoints) ; XEmacs
-	       (set-extent-endpoints mcc-overlay mcc-completion-begin mcc-completion-end
-				     completion-buffer))
-	      ((fboundp 'move-overlay)
-	       (move-overlay mcc-overlay mcc-completion-begin mcc-completion-end
-			     completion-buffer))))
+        (move-overlay mcc-overlay mcc-completion-begin mcc-completion-end
+                      completion-buffer))
     (unwind-protect
 	(progn
 	  (select-window minibuffer-scroll-window) ; completion-buffer
