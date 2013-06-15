@@ -165,7 +165,8 @@ If N is negative, return the Nth previous completion."
     (or (eq completion-buffer (get-buffer "*Completions*"))
 	(error "minibuffer-scroll-window isn't displaying \
 the *Completions* buffer"))
-    (with-current-buffer completion-buffer
+    (save-excursion
+      (set-buffer completion-buffer)
       ;; Find the beginning and end of the completion:
       (if (< n 0)
 	  (while (< n 0)
