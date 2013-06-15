@@ -107,32 +107,41 @@ To cycle to previous completions, type <backtab>."
 ;; `\\<minibuffer-local-completion-map>\\[minibuffer-complete-backward]'
   (interactive "p")
   (if (and minibuffer-complete-cycle
-	   (not (eq this-command 'completion-at-point)) ; Emacs 24
-	   ;; See Fminibuffer_complete:
-	   (or (eq last-command this-command)
-	       (eq last-command 'completion-at-point)   ; Emacs 24
-	       (and (eq minibuffer-complete-cycle 'auto)
-		    (progn
-		      (setq mcc-completion-begin nil
-			    mcc-completion-end nil)
-		      ad-do-it)))
-	   minibuffer-scroll-window
-	   (window-live-p minibuffer-scroll-window))
-      ;; Delete the current completion, then insert and display the
-      ;; next completion:
-      (let ((incomplete-path
-	     (if minibuffer-completing-file-name
-		 (buffer-substring-no-properties (minibuffer-prompt-end)
-                                                 (point-max)))))
-	(delete-region (minibuffer-prompt-end)
-		       (point-max))
-        (when incomplete-path
-          (and mcc-completion-begin mcc-completion-end
-               (setq incomplete-path
-                     (substring incomplete-path 0 (- mcc-completion-begin mcc-completion-end))))
-          (insert incomplete-path))
-	(insert (mcc-completion-string count))
-	(mcc-display-completion (< count 0)))
+           (not (eq this-command 'completion-at-point)) ; Emacs 24
+           ;; See Fminibuffer_complete:
+           (or (eq last-command this-command)
+               (eq last-command 'completion-at-point)   ; Emacs 24
+               (and (eq minibuffer-complete-cycle 'auto)
+                    (progn
+                      (setq mcc-completion-begin nil
+                            mcc-completion-end nil)
+                      ad-do-it)))
+           minibuffer-scroll-window
+           (window-live-p minibuffer-scroll-window))
+      (let ((lastlen (and mcc-completion-begin mcc-completion-end
+                      (- mcc-completion-end mcc-completion-begin)))
+            (completion (mcc-completion-string count)))
+        (cond (lastlen
+               ;; Delete the part last completed
+               (delete-region (- (point-max) lastlen)
+                              (point-max)))
+              (minibuffer-completing-file-name
+               ;; Skip the last component
+               (or (re-search-backward "/" (minibuffer-prompt-end) t)
+                   (goto-char (minibuffer-prompt-end)))
+               ;; Skip components to be completed
+               (let ((str (directory-file-name completion))
+                     (start 0))
+                 (while (string-match "/" str start)
+                   (setq start (match-end 0))
+                   (or (re-search-backward "/" (minibuffer-prompt-end) t)
+                       (goto-char (minibuffer-prompt-end))))
+                 (if (looking-at "/") (forward-char 1))
+                 (delete-region (point) (point-max))))
+              (t (delete-region (minibuffer-prompt-end)
+                                (point-max))))
+        (insert completion)
+        (mcc-display-completion (< count 0)))
     ;; Reset the mcc variables and proceed normally:
     (setq mcc-completion-begin nil
           mcc-completion-end nil)
