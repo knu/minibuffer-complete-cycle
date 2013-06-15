@@ -51,6 +51,10 @@
 ;; name completion) inserting the directory component of the initial
 ;; input, and then inserting the completion string itself is based on
 ;; cycle-mini.el (1.03) by Joe Reiss <jreiss@vt.edu>.
+;;
+;; Emacs 24 introduced `completion-cycle-threshold' which achieves a
+;; similar goal.  This extension allows you to see the completion
+;; window while cycling, and to cycle backward with <backtab>.
 
 
 ;;; Code:
