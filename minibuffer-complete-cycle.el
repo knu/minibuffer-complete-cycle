@@ -102,6 +102,7 @@ If `auto', `minibuffer-complete' selects the first completion immediately."
 
 
 ;; Commands:
+
 (defadvice minibuffer-complete (around cycle (&optional count) activate compile)
   "If the `minibuffer-complete-cycle' option is set, then instead of
 just scrolling the window of possible completions, insert each one in
@@ -172,6 +173,8 @@ Prefix arg means select the COUNT'th previous completion."
    (self-insert-command arg)))
 
 ;; Functions:
+
+;;;###autoload
 (defun mcc-define-keys ()	; mcc-minor-mode & -keymap
   "Define extra key bindings in the local keymap.
 This has no effect unless the `minibuffer-complete-cycle' option is set."
@@ -185,6 +188,7 @@ This has no effect unless the `minibuffer-complete-cycle' option is set."
         (and (null (local-key-binding key))
              (local-set-key key func))))))
 
+;;;###autoload
 (add-hook 'minibuffer-setup-hook 'mcc-define-keys)
 
 (defun mcc-completion-string (n)
