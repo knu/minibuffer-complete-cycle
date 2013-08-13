@@ -64,6 +64,8 @@
 
 (require 'custom)			; defgroup, defcustom, defface
 
+(eval-when-compile (require 'cl))
+
 ;; User options:
 
 (defgroup minibuffer-complete-cycle nil
@@ -158,17 +160,32 @@ Prefix arg means select the COUNT'th previous completion."
   (setq this-command 'minibuffer-complete)
   (minibuffer-complete (- count)))
 
+(defun minibuffer-complete-slash (&optional arg)
+  "Insert a slash ARG times, or settle the current path component if complete-cycling is at a directory name."
+  (interactive "p")
+  (or
+   (and (= arg 1)
+        (eq last-command 'minibuffer-complete)
+        minibuffer-completing-file-name
+        (eolp)
+        (char-equal (preceding-char) ?/))
+   (self-insert-command arg)))
 
 ;; Functions:
-(defun mcc-define-backward-key ()	; mcc-minor-mode & -keymap
-  "Bind <backtab> to `minibuffer-complete-backward' in the local keymap.
-This has no effect unless the `minibuffer-complete-cycle' option is set and
-<backtab> is not already bound in the keymap."
-  (if (and minibuffer-complete-cycle
-	   (null (local-key-binding (kbd "<backtab>"))))
-      (local-set-key (kbd "<backtab>") 'minibuffer-complete-backward)))
+(defun mcc-define-keys ()	; mcc-minor-mode & -keymap
+  "Define extra key bindings in the local keymap.
+This has no effect unless the `minibuffer-complete-cycle' option is set."
+  (when minibuffer-complete-cycle
+    (dolist (binding
+             '(("<backtab>" . minibuffer-complete-backward)
+               ("/"         . minibuffer-complete-slash)
+               ))
+      (let ((key (kbd (car binding)))
+            (func (cdr binding)))
+        (and (null (local-key-binding key))
+             (local-set-key key func))))))
 
-(add-hook 'minibuffer-setup-hook 'mcc-define-backward-key)
+(add-hook 'minibuffer-setup-hook 'mcc-define-keys)
 
 (defun mcc-completion-string (n)
   "Return the Nth next completion.
