@@ -3,11 +3,15 @@
 ;; Copyright © 1997,1998,2000,2003,2006 Kevin Rodgers
 ;; Copyright © 2013 Akinori MUSHA
 
-;; Author: Kevin Rodgers <ihs_4664@yahoo.com>
+;; Author: Akinori MUSHA <knu@iDaemons.org>
+;;         Kevin Rodgers <ihs_4664@yahoo.com>
+;; Maintainer: Akinori MUSHA <knu@iDaemons.org>
+;; URL: https://github.com/knu/minibuffer-complete-cycle
 ;; Created: 15 Oct 1997
-;; Version: $Revision: 1.24 $
+;; Version: 1.25.20130814
 ;; Keywords: completion
-;; RCS: $Id: minibuffer-complete-cycle.el,v 1.24 2006/07/25 16:49:03 onc04664 Exp $
+;; X-Original-Version: $Revision: 1.24 $
+;; X-Original-RCS: $Id: minibuffer-complete-cycle.el,v 1.24 2006/07/25 16:49:03 onc04664 Exp $
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
@@ -56,6 +60,14 @@
 ;; similar goal.  This extension allows you to see the completion
 ;; window while cycling, and to cycle backward with <backtab>.
 
+;;; Change log:
+;;
+;; Version 1.25.20130814  2013-08-14  Akinori MUSHA
+;;   Support for Emacs 24.
+;;   Fix a bug with partial completion.
+;;   Fix a bug when the minibuffer is like "~/dir1/~/".
+;;   Bind <backtab> to minibuffer-complete-backward rather than M-TAB.
+;;   Make the slash key settle the curent path component if appropriate.
 
 ;;; Code:
 
